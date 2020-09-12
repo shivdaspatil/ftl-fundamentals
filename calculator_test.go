@@ -175,17 +175,12 @@ func TestDivide(t *testing.T) {
 
 	for _, test := range successTestCases {
 		got, err := calculator.Divide(test.a, test.b)
-		if test.errExpected {
-			if err == nil {
-				t.Errorf("Test Divide (%f, %f) %s failed: Expected error got nil",
+		errReceived := err != nil
+		if test.errExpected != errReceived{
+				t.Errorf("Test Divide (%f, %f) %s failed: Unexpected error received",
 					test.a, test.b, test.name)
-			}
 		} else {
-			if err != nil {
-				t.Errorf("Test Divide (%f, %f) %s failed: Got err expected nil",
-					test.a, test.b, test.name)
-			}
-			if !almostEqual(test.want, got) {
+			if !test.errExpected && !almostEqual(test.want, got) {
 				t.Errorf("Test Divide (%f, %f) %s failed: want %f, got %f",
 					test.a, test.b, test.name, test.want, got)
 			}
