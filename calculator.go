@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-// Add takes two or more numbers and returns the result of adding them together.
+// Add takes two or subsequent numbers and returns the result of adding them together.
 func Add(a, b float64, nums ...float64) float64 {
 	result := a + b
 	for _, n := range nums {
@@ -18,8 +18,8 @@ func Add(a, b float64, nums ...float64) float64 {
 	return result
 }
 
-// Subtract takes two or more numbers and returns the result of subtracting the second
-// from the first.
+// Subtract takes two or subsequent numbers and returns the result of subtracting the subsequent
+// number from previous.
 func Subtract(a, b float64, nums ...float64) float64 {
 	result := a - b
 	for _, n := range nums {
@@ -28,8 +28,8 @@ func Subtract(a, b float64, nums ...float64) float64 {
 	return result
 }
 
-// Multiply takes two or more numbers and returns the result of multiplication of both
-// the numbers
+// Multiply takes two or subsequent numbers and returns the result of multiplication of the
+// given numbers
 func Multiply(a, b float64, nums ...float64) float64 {
 	result := a * b
 	for _, n := range nums {
@@ -38,7 +38,7 @@ func Multiply(a, b float64, nums ...float64) float64 {
 	return result
 }
 
-// Divide takes two or more numbers and returns the result of dividing the given numbers.
+// Divide takes two or subsequent numbers and returns the result of dividing the given numbers.
 // It returns error if the division operation is not valid
 func Divide(a, b float64, nums ...float64) (float64, error) {
 	if b == 0 {
@@ -55,7 +55,7 @@ func Divide(a, b float64, nums ...float64) (float64, error) {
 	return result, nil
 }
 
-// SquareRoot returns the square root of the provided number , error if the input
+// SquareRoot returns the square root of the provided number, or an error if the input
 // number is invalid
 func SquareRoot(a float64) (float64, error) {
 	if a < 0 {
@@ -64,18 +64,17 @@ func SquareRoot(a float64) (float64, error) {
 	return math.Sqrt(a), nil
 }
 
-// ComputeString processes the input string as two operands separated by the operator
-// and returns the result of that operation. Returns error if the string is not in
-// the acceptable form.
-func ComputeString(str string) (float64, error) {
-
-	opIndex := strings.IndexAny(str, "+-*/")
+// Evaluate processes the input string as two operands separated by the operator
+// and returns the result of that operation, or an error if the string is not in
+// the acceptable form "operand1 operator operand2" with leading and embedded spaces
+func Evaluate(expr string) (float64, error) {
+	opIndex := strings.IndexAny(expr, "+-*/")
 	if opIndex == -1 {
-		return 0, errors.New("Invalid string")
+		return 0, fmt.Errorf("Supported operator (+,-,*,/) not found")
 	}
 
-	operand1 := strings.TrimSpace(str[0:opIndex])
-	operand2 := strings.TrimSpace(str[opIndex+1:])
+	operand1 := strings.TrimSpace(expr[0:opIndex])
+	operand2 := strings.TrimSpace(expr[opIndex+1:])
 
 	num1, err := strconv.ParseFloat(operand1, 64)
 	if err != nil {
@@ -87,7 +86,7 @@ func ComputeString(str string) (float64, error) {
 		return 0, errors.New("error parsing the second number")
 	}
 
-	switch str[opIndex] {
+	switch expr[opIndex] {
 	case '+':
 		return num1 + num2, nil
 	case '-':
@@ -97,6 +96,6 @@ func ComputeString(str string) (float64, error) {
 	case '/':
 		return num1 / num2, nil
 	default:
-		return 0, errors.New("Unsupported operator")
+		return 0, fmt.Errorf("unsupported operator %v in expression %s ", expr[opIndex], expr)
 	}
 }

@@ -9,8 +9,7 @@ import (
 )
 
 func closeEnough(a, b float64) bool {
-	const epsilon = 1e-9
-	return math.Abs(a-b) <= epsilon
+	return math.Abs(a-b) <= 1e-9
 }
 
 func TestAdd(t *testing.T) {
@@ -70,27 +69,31 @@ func TestAdd(t *testing.T) {
 	}
 
 	for _, tc := range tcs {
-		got := calculator.Add(tc.a, tc.b, tc.nums...)
-		if !closeEnough(tc.want, got) {
-			t.Errorf("%s : Add(%f, %f, %v) : want %f, got %f",
-				tc.name, tc.a, tc.b, tc.nums, tc.want, got)
-		}
+		t.Run(tc.name, func(t *testing.T) {
+			got := calculator.Add(tc.a, tc.b, tc.nums...)
+			if !closeEnough(tc.want, got) {
+				t.Errorf("%s : Add(%f, %f, %v) : want %f, got %f",
+					tc.name, tc.a, tc.b, tc.nums, tc.want, got)
+			}
+		})
 	}
 }
 
 func TestAddRandom(t *testing.T) {
 	t.Parallel()
-	rand.Seed(time.Now().UnixNano())
-	for i := 1; i <= 100; i++ {
-		randA := rand.Float64() * float64(rand.Intn(10))
-		randB := rand.Float64() * float64(rand.Intn(10))
-		want := randA + randB
-		got := calculator.Add(randA, randB)
-		if want != got {
-			t.Errorf("(Add random numbers): Add(%f, %f) : want %f, got %f",
-				randA, randB, want, got)
+	t.Run("random_add", func(t *testing.T) {
+		rand.Seed(time.Now().UnixNano())
+		for i := 0; i < 100; i++ {
+			randA := rand.Float64() * float64(rand.Intn(10))
+			randB := rand.Float64() * float64(rand.Intn(10))
+			want := randA + randB
+			got := calculator.Add(randA, randB)
+			if want != got {
+				t.Errorf("(Add random numbers): Add(%f, %f) : want %f, got %f",
+					randA, randB, want, got)
+			}
 		}
-	}
+	})
 }
 
 func TestSubtract(t *testing.T) {
@@ -149,11 +152,13 @@ func TestSubtract(t *testing.T) {
 	}
 
 	for _, tc := range tcs {
-		got := calculator.Subtract(tc.a, tc.b, tc.nums...)
-		if !closeEnough(tc.want, got) {
-			t.Errorf("%s : Subtract(%f, %f, %v) : want %f, got %f",
-				tc.name, tc.a, tc.b, tc.nums, tc.want, got)
-		}
+		t.Run(tc.name, func(t *testing.T) {
+			got := calculator.Subtract(tc.a, tc.b, tc.nums...)
+			if !closeEnough(tc.want, got) {
+				t.Errorf("%s : Subtract(%f, %f, %v) : want %f, got %f",
+					tc.name, tc.a, tc.b, tc.nums, tc.want, got)
+			}
+		})
 	}
 }
 
@@ -213,11 +218,13 @@ func TestMultiply(t *testing.T) {
 	}
 
 	for _, tc := range tcs {
-		got := calculator.Multiply(tc.a, tc.b, tc.nums...)
-		if !closeEnough(tc.want, got) {
-			t.Errorf("%s: Multiply(%f, %f, %v) : want %f, got %f",
-				tc.name, tc.a, tc.b, tc.nums, tc.want, got)
-		}
+		t.Run(tc.name, func(t *testing.T) {
+			got := calculator.Multiply(tc.a, tc.b, tc.nums...)
+			if !closeEnough(tc.want, got) {
+				t.Errorf("%s: Multiply(%f, %f, %v) : want %f, got %f",
+					tc.name, tc.a, tc.b, tc.nums, tc.want, got)
+			}
+		})
 	}
 }
 
@@ -300,16 +307,18 @@ func TestDivide(t *testing.T) {
 	}
 
 	for _, tc := range tcs {
-		got, err := calculator.Divide(tc.a, tc.b, tc.nums...)
-		errReceived := err != nil
-		if tc.errExpected != errReceived {
-			t.Errorf("%s: Divide (%f, %f, %v) : Unexpected error received",
-				tc.name, tc.a, tc.b, tc.nums)
-		}
-		if !tc.errExpected && !closeEnough(tc.want, got) {
-			t.Errorf("%s: Divide(%f, %f, %v) : want %f, got %f",
-				tc.name, tc.a, tc.b, tc.nums, tc.want, got)
-		}
+		t.Run(tc.name, func(t *testing.T) {
+			got, err := calculator.Divide(tc.a, tc.b, tc.nums...)
+			errReceived := err != nil
+			if tc.errExpected != errReceived {
+				t.Errorf("%s: Divide (%f, %f, %v) : Unexpected error status: %v",
+					tc.name, tc.a, tc.b, tc.nums, err)
+			}
+			if !tc.errExpected && !closeEnough(tc.want, got) {
+				t.Errorf("%s: Divide(%f, %f, %v) : want %f, got %f",
+					tc.name, tc.a, tc.b, tc.nums, tc.want, got)
+			}
+		})
 	}
 }
 
@@ -342,20 +351,22 @@ func TestSquareRoot(t *testing.T) {
 	}
 
 	for _, tc := range tcs {
-		got, err := calculator.SquareRoot(tc.a)
-		errReceived := err != nil
-		if tc.errExpected != errReceived {
-			t.Errorf("%s: Squareroot(%f) : Unexpected error received",
-				tc.name, tc.a)
-		}
-		if !tc.errExpected && !closeEnough(tc.want, got) {
-			t.Errorf("%s: Squareroot(%f) : want %f, got %f",
-				tc.name, tc.a, tc.want, got)
-		}
+		t.Run(tc.name, func(t *testing.T) {
+			got, err := calculator.SquareRoot(tc.a)
+			errReceived := err != nil
+			if tc.errExpected != errReceived {
+				t.Errorf("%s: Squareroot(%f) : Unexpected error received",
+					tc.name, tc.a)
+			}
+			if !tc.errExpected && !closeEnough(tc.want, got) {
+				t.Errorf("%s: Squareroot(%f) : want %f, got %f",
+					tc.name, tc.a, tc.want, got)
+			}
+		})
 	}
 }
 
-func TestComputeString(t *testing.T) {
+func TestEvaluate(t *testing.T) {
 	t.Parallel()
 	tcs := []struct {
 		name        string
@@ -414,16 +425,17 @@ func TestComputeString(t *testing.T) {
 	}
 
 	for _, tc := range tcs {
-		got, err := calculator.ComputeString(tc.input)
-		errReceived := err != nil
-		if tc.errExpected != errReceived {
-			t.Errorf("%s: ComputeString(%s) : Unexpected error received",
-				tc.input, tc.name)
-		} else {
-			if !tc.errExpected && !closeEnough(tc.want, got) {
-				t.Errorf("%s: ComputeString (%s) : want %f, got %f",
-					tc.input, tc.name, tc.want, got)
+		t.Run(tc.name, func(t *testing.T) {
+			got, err := calculator.Evaluate(tc.input)
+			errReceived := err != nil
+			if tc.errExpected != errReceived {
+				t.Fatalf("%s: Evaluate(%s) : Unexpected error received",
+					tc.name, tc.input)
 			}
-		}
+			if !tc.errExpected && !closeEnough(tc.want, got) {
+				t.Errorf("%s: Evaluate(%s) : want %f, got %f",
+					tc.name, tc.input, tc.want, got)
+			}
+		})
 	}
 }
