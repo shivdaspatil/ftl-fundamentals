@@ -66,7 +66,9 @@ func SquareRoot(a float64) (float64, error) {
 
 // Evaluate processes the input string as two operands separated by the operator
 // and returns the result of that operation, or an error if the string is not in
-// the acceptable form "operand1 operator operand2" with leading and embedded spaces
+// the acceptable form "operand1 operator operand2". Leading, embedded and trailing
+// spaces are allowed between operands and operator.
+// Supported operators are : + , -, * and /
 func Evaluate(expr string) (float64, error) {
 	opIndex := strings.IndexAny(expr, "+-*/")
 	if opIndex == -1 {

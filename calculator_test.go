@@ -81,9 +81,9 @@ func TestAdd(t *testing.T) {
 
 func TestAddRandom(t *testing.T) {
 	t.Parallel()
-	t.Run("random_add", func(t *testing.T) {
-		rand.Seed(time.Now().UnixNano())
-		for i := 0; i < 100; i++ {
+	rand.Seed(time.Now().UnixNano())
+	for i := 0; i < 100; i++ {
+		t.Run("random_add", func(t *testing.T) {
 			randA := rand.Float64() * float64(rand.Intn(10))
 			randB := rand.Float64() * float64(rand.Intn(10))
 			want := randA + randB
@@ -92,8 +92,8 @@ func TestAddRandom(t *testing.T) {
 				t.Errorf("(Add random numbers): Add(%f, %f) : want %f, got %f",
 					randA, randB, want, got)
 			}
-		}
-	})
+		})
+	}
 }
 
 func TestSubtract(t *testing.T) {
